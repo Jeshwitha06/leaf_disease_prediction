@@ -4,17 +4,21 @@ import numpy as np
 import gdown
 import os
 
-file_id = "1nQhhu6xymrmiOfja4sn6dBgckSlJkH7x"
-url = 'https://drive.google.com/file/d/1nQhhu6xymrmiOfja4sn6dBgckSlJkH7x'
+file_id = "1_9Q28QeJXnyRCH18IVxpX5KhuDtZC40c"
+url = 'https://drive.google.com/file/d/1_9Q28QeJXnyRCH18IVxpX5KhuDtZC40c'
 model_path = "trained_plant_disease_model.keras"
+
 
 if not os.path.exists(model_path):
     st.warning("Downloading model from Google Drive...")
-    gdown.download(url, model_path, quiet=False)
+    gdown.download(id=file_id, output=model_path, quiet=False,fuzzy=True)
 
-model_path = "trained_plant_disease_model.keras"
+def load_model():
+    return tf.keras.models.load_model(model_path)
+
+model = load_model()
+
 def model_prediction(test_image):
-    model = tf.keras.models.load_model(model_path)
     image = tf.keras.preprocessing.image.load_img(test_image,target_size=(128,128))
     input_arr = tf.keras.preprocessing.image.img_to_array(image)
     input_arr = np.array([input_arr]) #convert single image to batch
@@ -26,10 +30,15 @@ st.sidebar.title("Plant Disease Detection System for Sustainable Agriculture")
 app_mode = st.sidebar.selectbox("Select Page",["HOME","DISEASE RECOGNITION"])
 #app_mode = st.sidebar.selectbox("Select Page",["Home"," ","Disease Recognition"])
 
+# import Image from pillow to open images
 from PIL import Image
-img = Image.open("leaf image.jpeg")
+img = Image.open("Disease.png")
+
+# display image using streamlit
+# width is used to set the width of an image
 st.image(img)
 
+#Main Page
 if(app_mode=="HOME"):
     st.markdown("<h1 style='text-align: center;'>Plant Disease Detection System for Sustainable Agriculture", unsafe_allow_html=True)
     
@@ -47,6 +56,3 @@ elif(app_mode=="DISEASE RECOGNITION"):
         #Reading Labels
         class_name = ['Early_Blight', 'Healthy', 'Late_Blight']
         st.success("Model is Predicting it's a {}".format(class_name[result_index]))
-
-
-
